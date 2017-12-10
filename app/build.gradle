@@ -51,4 +51,7 @@ dependencies {
     // Icepick
     implementation 'frankiesardo:icepick:3.2.0'
     annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
+
+    //Sugar ORM
+    implementation 'com.github.satyan:sugar:1.3'
 }
