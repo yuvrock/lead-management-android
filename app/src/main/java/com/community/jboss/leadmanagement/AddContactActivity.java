@@ -1,5 +1,6 @@
 package com.community.jboss.leadmanagement;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -11,8 +12,6 @@ import android.widget.EditText;
 import com.community.jboss.leadmanagement.Classes.Contact;
 import com.community.jboss.leadmanagement.Classes.Number;
 
-import java.util.UUID;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -21,6 +20,9 @@ import butterknife.ButterKnife;
  */
 
 public class AddContactActivity extends AppCompatActivity {
+
+    public static final String INTENT_EXTRA_NAME = "INTENT_EXTRA_NAME";
+    public static final String INTENT_EXTRA_NUMBER = "INTENT_EXTRA_NUMBER";
 
     @BindView(R.id.add_contact_toolbar) Toolbar toolbar;
     @BindView(R.id.contact_name_field) EditText contactNameField;
@@ -65,6 +67,12 @@ public class AddContactActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        final Intent intent = getIntent();
+        final String name = intent.getStringExtra(INTENT_EXTRA_NAME);
+        final String number = intent.getStringExtra(INTENT_EXTRA_NUMBER);
+        contactNameField.setText(name);
+        contactNumberField.setText(number);
     }
 
     //TODO Add multiple numbers

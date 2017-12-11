@@ -2,26 +2,23 @@ package com.community.jboss.leadmanagement;
 
 
 import android.Manifest;
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.FrameMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.community.jboss.leadmanagement.contacts.ContactsFragment;
 import com.community.jboss.leadmanagement.fragment.AboutUsFragment;
-import com.community.jboss.leadmanagement.fragment.ContactsFragment;
 import com.community.jboss.leadmanagement.fragment.GroupsFragment;
 import com.community.jboss.leadmanagement.fragment.HomeFragment;
 import com.community.jboss.leadmanagement.fragment.PrivacyPolicyFragment;
@@ -33,6 +30,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final int ID = 512;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.fab)
@@ -41,8 +39,6 @@ public class MainActivity extends AppCompatActivity
     DrawerLayout drawer;
     @BindView(R.id.nav_view)
     NavigationView navigationView;
-
-    private final int ID = 512;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +65,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        ButterKnife.bind(this);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -102,8 +97,6 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-        ButterKnife.bind(this);
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -159,7 +152,7 @@ public class MainActivity extends AppCompatActivity
                     startActivity(new Intent(getApplicationContext(), AddContactActivity.class));
                 }
             });
-            fab.setImageResource(R.drawable.ic_action_add);
+            fab.setImageResource(R.drawable.ic_add_white_24dp);
         }
     }
 }

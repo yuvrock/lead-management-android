@@ -1,47 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:tool="http://schemas.android.com/tools">
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:background="?attr/selectableItemBackground"
+    tool:layout_editor_absoluteY="81dp">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/edittext_vertical_spacing"
-            android:paddingBottom="@dimen/edittext_vertical_spacing"
-            android:paddingStart="@dimen/activity_horizontal_margin"
-            android:paddingEnd="@dimen/activity_horizontal_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin">
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/contact_avatar"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_launcher_background"
+        app:civ_border_color="#EEEEEE"
+        app:civ_border_width="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/contact_name"
+        app:layout_constraintEnd_toStartOf="@+id/contact_name"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/contact_name" />
 
-            <com.mikhaellopez.circularimageview.CircularImageView
-                android:id="@+id/contact_avatar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_launcher_background"
-                app:civ_border_color="#EEEEEE"
-                app:civ_border_width="4dp" />
+    <TextView
+        android:id="@+id/contact_name"
+        style="@style/TextAppearance.AppCompat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="261dp"
+        android:layout_marginRight="261dp"
+        app:layout_constraintBottom_toTopOf="@+id/contact_number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/contact_avatar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tool:text="John Doe" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:layout_marginStart="15dp"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@+id/contact_avatar"
-                android:layout_toRightOf="@+id/contact_avatar">
-
-                <TextView
-                    android:id="@+id/contact_name"
-                    style="@style/TextAppearance.AppCompat"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tool:text="John Doe" />
-
-            </RelativeLayout>
-
-        </RelativeLayout>
-
-
-</RelativeLayout>
+    <TextView
+        android:id="@+id/contact_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/contact_name"
+        app:layout_constraintTop_toBottomOf="@+id/contact_name"
+        tool:text="12345678" />
+</android.support.constraint.ConstraintLayout>

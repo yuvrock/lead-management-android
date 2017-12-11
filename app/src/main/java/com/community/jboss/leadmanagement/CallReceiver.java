@@ -42,7 +42,7 @@ public class CallReceiver extends BroadcastReceiver {
 
     public void showNotification(Context context, String text){
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.call_ico)
+                .setSmallIcon(R.drawable.ic_call_black_24dp)
                 .setContentTitle("Calling")
                 .setTicker("Lead Management")
                 .setContentText("Number: "+text);
