@@ -1,4 +1,4 @@
-package com.community.jboss.leadmanagement.contacts;
+package com.community.jboss.leadmanagement.main.contacts;
 
 import android.content.Context;
 import android.content.Intent;

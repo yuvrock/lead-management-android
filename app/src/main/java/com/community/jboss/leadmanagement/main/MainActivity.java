@@ -1,10 +1,14 @@
-package com.community.jboss.leadmanagement;
+package com.community.jboss.leadmanagement.main;
 
 
 import android.Manifest;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -17,15 +21,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.community.jboss.leadmanagement.contacts.ContactsFragment;
-import com.community.jboss.leadmanagement.fragment.AboutUsFragment;
-import com.community.jboss.leadmanagement.fragment.GroupsFragment;
-import com.community.jboss.leadmanagement.fragment.HomeFragment;
-import com.community.jboss.leadmanagement.fragment.PrivacyPolicyFragment;
-import com.community.jboss.leadmanagement.fragment.SettingsFragment;
+import com.community.jboss.leadmanagement.AddContactActivity;
+import com.community.jboss.leadmanagement.PermissionManager;
+import com.community.jboss.leadmanagement.R;
+import com.community.jboss.leadmanagement.main.contacts.ContactsFragment;
+import com.community.jboss.leadmanagement.main.groups.GroupsFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -40,10 +44,22 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.nav_view)
     NavigationView navigationView;
 
+    private MainActivityViewModel mViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+
+        mViewModel.getSelectedNavItem().observe(this,
+                new Observer<MainActivityViewModel.NavigationItem>() {
+                    @Override
+                    public void onChanged(@Nullable MainActivityViewModel.NavigationItem navigationItem) {
+                        displayNavigationItem(navigationItem);
+                    }
+                });
 
         PermissionManager permissionManager = new PermissionManager(this, this);
         if (!permissionManager.permissionStatus(Manifest.permission.READ_PHONE_STATE)) {
@@ -59,8 +75,18 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
+        // Set initial selected item to Contacts
+        if (savedInstanceState == null) {
+            selectInitialNavigationItem();
+        }
+
         initFab();
-        setTitle(R.string.home_fragment);
+    }
+
+    private void selectInitialNavigationItem() {
+        final @IdRes int initialItem = R.id.nav_contacts;
+        onNavigationItemSelected(navigationView.getMenu().findItem(initialItem));
+        navigationView.setCheckedItem(initialItem);
     }
 
     @Override
@@ -94,52 +120,46 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        final MainActivityViewModel.NavigationItem navigationItem;
+        switch (item.getItemId()) {
+            case R.id.nav_contacts:
+                navigationItem = MainActivityViewModel.NavigationItem.CONTACTS;
+                break;
+            case R.id.nav_groups:
+                navigationItem = MainActivityViewModel.NavigationItem.GROUPS;
+                break;
+            default:
+                Timber.e("Failed to resolve selected navigation item id");
+                throw new IllegalArgumentException();
 
-        if (id == R.id.nav_camera) {
-            HomeFragment homeFragment = new HomeFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_frame, homeFragment)
-                    .addToBackStack(null)
-                    .commit();
-        } else if (id == R.id.nav_gallery) {
-            ContactsFragment contactsFragment = new ContactsFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_frame, contactsFragment)
-                    .addToBackStack(null)
-                    .commit();
-        } else if (id == R.id.nav_slideshow) {
-            GroupsFragment groupsFragment = new GroupsFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_frame, groupsFragment)
-                    .addToBackStack(null)
-                    .commit();
-        } else if (id == R.id.nav_manage) {
-            SettingsFragment settingsFragment = new SettingsFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_frame, settingsFragment)
-                    .addToBackStack(null)
-                    .commit();
-        } else if (id == R.id.nav_share) {
-            AboutUsFragment aboutUsFragment = new AboutUsFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_frame, aboutUsFragment)
-                    .addToBackStack(null)
-                    .commit();
-        } else if (id == R.id.nav_send) {
-            PrivacyPolicyFragment privacyPolicyFragment = new PrivacyPolicyFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_frame, privacyPolicyFragment)
-                    .addToBackStack(null)
-                    .commit();
         }
+        mViewModel.setSelectedNavItem(navigationItem);
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void displayNavigationItem(MainActivityViewModel.NavigationItem navigationItem) {
+        MainFragment newFragment;
+
+        switch (navigationItem) {
+            case CONTACTS:
+                newFragment = new ContactsFragment();
+                break;
+            case GROUPS:
+                newFragment = new GroupsFragment();
+                break;
+            default:
+                Timber.e("Failed to resolve selected NavigationItem");
+                throw new IllegalArgumentException();
+        }
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, newFragment)
+                .commit();
+        setTitle(newFragment.getTitle());
     }
 
     public void initFab() {
