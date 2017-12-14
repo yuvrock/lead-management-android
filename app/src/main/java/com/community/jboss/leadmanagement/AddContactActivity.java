@@ -12,6 +12,8 @@ import android.widget.EditText;
 import com.community.jboss.leadmanagement.Classes.Contact;
 import com.community.jboss.leadmanagement.Classes.Number;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -27,6 +29,9 @@ public class AddContactActivity extends AppCompatActivity {
     @BindView(R.id.add_contact_toolbar) Toolbar toolbar;
     @BindView(R.id.contact_name_field) EditText contactNameField;
     @BindView(R.id.contact_number_field) EditText contactNumberField;
+
+    Number currentUser;
+    boolean creatingNew = true;
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -71,22 +76,69 @@ public class AddContactActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         final String name = intent.getStringExtra(INTENT_EXTRA_NAME);
         final String number = intent.getStringExtra(INTENT_EXTRA_NUMBER);
-        contactNameField.setText(name);
-        contactNumberField.setText(number);
+
+        if(findUserByNumber(number)!=null){
+            this.currentUser = findUserByNumber(number);
+            setTitle(R.string.contact_edit);
+            creatingNew = false;
+            contactNameField.setText(currentUser != null ? currentUser.getContact().getName() : "");
+            contactNumberField.setText(number);
+        }else{
+            currentUser = new Number();
+            contactNumberField.setText(number);
+            setTitle(R.string.contact_add);
+        }
     }
 
     //TODO Add multiple numbers
     private void createContact() {
+        // Check is Name or Password is empty
+        if(!checkEditText(contactNameField,"Please enter name") || !checkEditText(contactNumberField, "Please enter number")){
+            return;
+        }
 
         String _name = contactNameField.getText().toString();
         String _number = contactNumberField.getText().toString();
 
-        Contact contact = new Contact(_name);
-        contact.save();
+        if(currentUser!=null && currentUser.getContact()!=null){
+            if(currentUser.getContact().getName().equals(_name) && currentUser.getNumber().equals(_number)){
+                this.finish();
+            }else if (currentUser.getNumber().length()>0) {
+                currentUser.getContact().setName(_name);
+                currentUser.getContact().save();
+                currentUser.setNumber(_number);
+                currentUser.save();
+                this.finish();
+            }
+        }else {
+            Contact contact = new Contact(_name);
+            contact.save();
 
-        Number number = new Number(_number, contact);
-        number.save();
+            Number number = new Number(_number, contact);
+            number.save();
 
-        this.finish();
+            this.finish();
+        }
+    }
+
+    @Nullable
+    private Number findUserByNumber(String number){
+        if(number!=null) {
+            if (number.length() > 0) {
+                List<Number> data = Number.find(Number.class, "number = ?", number);
+                if (data.size() > 0) {
+                    return data.get(0);
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean checkEditText(EditText editText,String errorStr){
+        if(editText.getText().toString().length()<=0){
+            editText.setError(errorStr);
+            return false;
+        }
+        return true;
     }
 }

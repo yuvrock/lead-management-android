@@ -1,6 +1,7 @@
 package com.community.jboss.leadmanagement;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ public class CallReceiver extends BroadcastReceiver {
     private static final int ID = 47981;
     @Override
     public void onReceive(Context context, Intent intent) {
+
         try{
             Bundle extras = intent.getExtras();
             if (extras != null) {
@@ -41,10 +43,17 @@ public class CallReceiver extends BroadcastReceiver {
 
 
     public void showNotification(Context context, String text){
+
+        Intent notificationIntent = new Intent(context, AddContactActivity.class);
+        notificationIntent.putExtra("INTENT_EXTRA_NUMBER",text);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_call_black_24dp)
                 .setContentTitle("Calling")
                 .setTicker("Lead Management")
+                .setContentIntent(contentIntent)
                 .setContentText("Number: "+text);
 
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
