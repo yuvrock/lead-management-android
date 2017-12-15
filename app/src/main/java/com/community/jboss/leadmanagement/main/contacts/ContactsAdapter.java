@@ -6,7 +6,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.community.jboss.leadmanagement.AddContactActivity;
@@ -15,19 +17,34 @@ import com.community.jboss.leadmanagement.R;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
-/**
- * Created by carbonyl on 10/12/2017.
- */
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHolder> {
 
     private List<Contact> contacts;
+    private ContactsAdapter adapter;
 
-    public ContactsAdapter(List<Contact> myDataset) {
+    ContactsAdapter(List<Contact> myDataset) {
         contacts = myDataset;
+        adapter = this;
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        // each data item is just a string in this case
+        TextView name;
+        TextView number;
+        ImageView avatar;
+        ImageButton deleteButton;
+        RelativeLayout layout;
+        ViewHolder(View v) {
+            super(v);
+            name = v.findViewById(R.id.contact_name);
+            number = v.findViewById(R.id.contact_number);
+            avatar = v.findViewById(R.id.contact_avatar);
+            deleteButton = v.findViewById(R.id.deleteContact);
+            layout = v.findViewById(R.id.cellLayout);
+
+        }
     }
 
     @Override
@@ -40,10 +57,43 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-        Contact contact = contacts.get(position);
-        holder.bind(contact);
+        final Contact contact = contacts.get(position);
+        // TODO add contact avatar
+        holder.name.setText(contact.getName());
+        holder.number.setText(contact.getNumbers().get(0).getNumber());
+        holder.layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Context context = view.getContext();
+                final Intent intent = new Intent(context, AddContactActivity.class);
+                intent.putExtra(AddContactActivity.INTENT_EXTRA_UUID, contact.getUuid().toString());
+                intent.putExtra(AddContactActivity.INTENT_EXTRA_NUMBER, contact.getNumbers().get(0).getNumber());
+                context.startActivity(intent);
+            }
+        });
+        holder.layout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if(holder.deleteButton.getVisibility()==View.VISIBLE){
+                    holder.deleteButton.setVisibility(View.GONE);
+                }else{
+                    holder.deleteButton.setVisibility(View.VISIBLE);
+                }
+                return true;
+            }
+        });
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                // Notify that data was changed
+                contact.delete();
+                contacts.clear();
+                contacts.addAll(Contact.listAll(Contact.class));
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -51,49 +101,8 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         return contacts.size();
     }
 
-    static final class ViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener {
 
-        @BindView(R.id.contact_name)
-        TextView name;
 
-        @BindView(R.id.contact_number)
-        TextView number;
 
-        @BindView(R.id.contact_avatar)
-        ImageView avatar;
-
-        private Contact mContact;
-
-        ViewHolder(View view) {
-            super(view);
-
-            ButterKnife.bind(this, view);
-
-            view.setOnClickListener(this);
-        }
-
-        void bind(Contact contact) {
-            mContact = contact;
-
-            name.setText(contact.getName());
-            number.setText(contact.getNumbers().get(0).getNumber());
-
-            // TODO: Bind the avatar to the ImageView
-            // holder.avatar.setImageResource(contact.getAvatar);
-        }
-
-        @Override
-        public void onClick(View view) {
-            final Context context = view.getContext();
-
-            final Intent intent = new Intent(context, AddContactActivity.class);
-            intent.putExtra(AddContactActivity.INTENT_EXTRA_NAME, mContact.getName());
-            // TODO: Support multiple numbers
-            intent.putExtra(AddContactActivity.INTENT_EXTRA_NUMBER,
-                    mContact.getNumbers().get(0).getNumber());
-
-            context.startActivity(intent);
-        }
-    }
 }
+

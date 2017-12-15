@@ -13,25 +13,23 @@ import com.community.jboss.leadmanagement.Classes.Contact;
 import com.community.jboss.leadmanagement.Classes.Number;
 
 import java.util.List;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by carbonyl on 10/12/2017.
- */
 
 public class AddContactActivity extends AppCompatActivity {
 
-    public static final String INTENT_EXTRA_NAME = "INTENT_EXTRA_NAME";
+    public static final String INTENT_EXTRA_UUID = "INTENT_EXTRA_UUID";
     public static final String INTENT_EXTRA_NUMBER = "INTENT_EXTRA_NUMBER";
 
     @BindView(R.id.add_contact_toolbar) Toolbar toolbar;
     @BindView(R.id.contact_name_field) EditText contactNameField;
     @BindView(R.id.contact_number_field) EditText contactNumberField;
 
-    Number currentUser;
-    boolean creatingNew = true;
+    private Number currentUser;
+    private UUID userUUID;
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -74,13 +72,15 @@ public class AddContactActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         final Intent intent = getIntent();
-        final String name = intent.getStringExtra(INTENT_EXTRA_NAME);
+        final String uuid = intent.getStringExtra(INTENT_EXTRA_UUID);
+        if(uuid!=null){
+            userUUID = UUID.fromString(uuid);
+        }
         final String number = intent.getStringExtra(INTENT_EXTRA_NUMBER);
 
         if(findUserByNumber(number)!=null){
             this.currentUser = findUserByNumber(number);
             setTitle(R.string.contact_edit);
-            creatingNew = false;
             contactNameField.setText(currentUser != null ? currentUser.getContact().getName() : "");
             contactNumberField.setText(number);
         }else{
@@ -127,6 +127,13 @@ public class AddContactActivity extends AppCompatActivity {
             if (number.length() > 0) {
                 List<Number> data = Number.find(Number.class, "number = ?", number);
                 if (data.size() > 0) {
+                    for(Number contact:data){
+                        if(userUUID!=null && contact.getContact()!=null){
+                            if(userUUID.equals(contact.getContact().getUuid())){
+                                return contact;
+                            }
+                        }
+                    }
                     return data.get(0);
                 }
             }

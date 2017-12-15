@@ -42,10 +42,10 @@ public class CallReceiver extends BroadcastReceiver {
     }
 
 
-    public void showNotification(Context context, String text){
+    public void showNotification(Context context, String number){
 
         Intent notificationIntent = new Intent(context, AddContactActivity.class);
-        notificationIntent.putExtra("INTENT_EXTRA_NUMBER",text);
+        notificationIntent.putExtra(AddContactActivity.INTENT_EXTRA_NUMBER,number);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
@@ -54,7 +54,7 @@ public class CallReceiver extends BroadcastReceiver {
                 .setContentTitle("Calling")
                 .setTicker("Lead Management")
                 .setContentIntent(contentIntent)
-                .setContentText("Number: "+text);
+                .setContentText("Number: "+number);
 
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (manager != null) {

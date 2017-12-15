@@ -2,6 +2,7 @@ package com.community.jboss.leadmanagement.main.contacts;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import butterknife.Unbinder;
 public class ContactsFragment extends MainFragment {
 
     @BindView(R.id.contact_recycler) RecyclerView recyclerView;
+    @BindView(R.id.swipeRefresh) SwipeRefreshLayout swipeToRefresh;
 
     private Unbinder mUnbinder;
 
@@ -38,6 +40,9 @@ public class ContactsFragment extends MainFragment {
         ((MainActivity)getContext()).initFab();
 
         return view;
+
+
+
     }
 
     @Override
@@ -48,13 +53,21 @@ public class ContactsFragment extends MainFragment {
     }
 
     private void initView() {
-
+        final ContactsAdapter adapter = new ContactsAdapter(Contact.listAll(Contact.class));
         if (Contact.count(Contact.class) > 0) {
-            ContactsAdapter adapter = new ContactsAdapter(Contact.listAll(Contact.class));
             recyclerView.setAdapter(adapter);
-        } else {
-            //No Contact
+
+            swipeToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    initView();
+
+                    swipeToRefresh.setRefreshing(false);
+                }
+            });
         }
+
+        //No Contact
     }
 
     @Override
