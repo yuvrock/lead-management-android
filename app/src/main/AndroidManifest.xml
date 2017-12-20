@@ -24,7 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".AddContactActivity"
             android:label="@string/title_activity_add_contact"
@@ -44,6 +43,10 @@
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".SettingsActivity"
+            android:theme="@style/AppTheme"
+            android:parentActivityName=".main.MainActivity"/>
     </application>
 
 </manifest>

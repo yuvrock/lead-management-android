@@ -24,6 +24,7 @@ import android.view.View;
 import com.community.jboss.leadmanagement.AddContactActivity;
 import com.community.jboss.leadmanagement.PermissionManager;
 import com.community.jboss.leadmanagement.R;
+import com.community.jboss.leadmanagement.SettingsActivity;
 import com.community.jboss.leadmanagement.main.contacts.ContactsFragment;
 import com.community.jboss.leadmanagement.main.groups.GroupsFragment;
 
@@ -114,6 +115,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
@@ -129,6 +131,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_groups:
                 navigationItem = MainActivityViewModel.NavigationItem.GROUPS;
+                break;
+            case R.id.nav_settings:
+                navigationItem = MainActivityViewModel.NavigationItem.SETTINGS;
                 break;
             default:
                 Timber.e("Failed to resolve selected navigation item id");
@@ -151,6 +156,9 @@ public class MainActivity extends AppCompatActivity
             case GROUPS:
                 newFragment = new GroupsFragment();
                 break;
+            case SETTINGS:
+                startActivity(new Intent(this, SettingsActivity.class));
+                return;
             default:
                 Timber.e("Failed to resolve selected NavigationItem");
                 throw new IllegalArgumentException();

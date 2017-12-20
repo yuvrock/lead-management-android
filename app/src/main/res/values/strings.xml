@@ -21,4 +21,7 @@
 
     <string name="contact_add">Add Contact</string>
     <string name="contact_edit">Edit Contact</string>
+
+    <string name="serverLocation">Server Location</string>
+    <string name="saved_server_ip">SERVER_IP</string>
 </resources>

@@ -30,6 +30,8 @@ dependencies {
 
     // Support library
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
+    implementation 'com.android.support:preference-v7:27.0.2'
+    compile 'com.android.support:preference-v14:27.0.2'
 
     // Constraint layout
     implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta3'
