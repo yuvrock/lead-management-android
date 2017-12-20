@@ -8,58 +8,80 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+
+import com.community.jboss.leadmanagement.data.daos.ContactNumberDao;
+import com.community.jboss.leadmanagement.data.entities.ContactNumber;
+import com.community.jboss.leadmanagement.main.contacts.editcontact.EditContactActivity;
+import com.community.jboss.leadmanagement.utils.DbUtil;
 
 public class CallReceiver extends BroadcastReceiver {
     private static final int ID = 47981;
+
+    private ContactNumber mContactNumber;
+    private Context mContext;
+
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (!TextUtils.equals(intent.getAction(), "android.intent.action.PHONE_STATE")) {
+            return;
+        }
 
-        try{
-            Bundle extras = intent.getExtras();
-            if (extras != null) {
-                String state = extras.getString(TelephonyManager.EXTRA_STATE);
-                String number = extras.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-                if(state!=null){
-                    if(number!=null && state.equals(TelephonyManager.EXTRA_STATE_RINGING) ){
-                        showNotification(context, number);
-                    }else if(state.equals(TelephonyManager.EXTRA_STATE_IDLE)){
-                        hideNotification(context);
-                    }else if(state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)){
-                        showNotification(context,number);
-                    }
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
+        final Bundle extras = intent.getExtras();
+        if (extras == null) return;
+
+        final String state = extras.getString(TelephonyManager.EXTRA_STATE);
+        if (state == null) return;
+
+        final String number = extras.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+        if (number == null) return;
+
+        mContext = context;
+        final ContactNumberDao dao = DbUtil.contactNumberDao(mContext);
+        mContactNumber = dao.getContactNumber(number);
+
+        // Don't show the notification is the contact is not in the database
+        if (mContactNumber == null) {
+            return;
+        }
+
+        if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+            showNotification();
+        } else if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+            hideNotification();
+        } else if (state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
+            showNotification();
         }
     }
 
-    private void hideNotification(Context context) {
-        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    private void hideNotification() {
+        final NotificationManager manager =
+                (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         if (manager != null) {
             manager.cancel(ID);
         }
     }
 
+    private void showNotification() {
+        final Intent notificationIntent = new Intent(mContext, EditContactActivity.class);
+        notificationIntent.putExtra(
+                EditContactActivity.INTENT_EXTRA_CONTACT_ID, mContactNumber.getContactId());
 
-    public void showNotification(Context context, String number){
+        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0,
+                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Intent notificationIntent = new Intent(context, AddContactActivity.class);
-        notificationIntent.putExtra(AddContactActivity.INTENT_EXTRA_NUMBER,number);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
+        final NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext)
                 .setSmallIcon(R.drawable.ic_call_black_24dp)
                 .setContentTitle("Calling")
                 .setTicker("Lead Management")
                 .setContentIntent(contentIntent)
-                .setContentText("Number: "+number);
+                .setContentText("Number: " + mContactNumber.getNumber());
 
-        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        final NotificationManager manager =
+                (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         if (manager != null) {
             manager.cancel(ID);
-            manager.notify(ID,notification.build());
+            manager.notify(ID, notification.build());
         }
     }
 }

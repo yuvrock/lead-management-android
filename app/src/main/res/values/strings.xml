@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Lead Management</string>
     <string name="title_activity_home">MainActivity</string>
-    <string name="title_activity_add_contact">Add Contact</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -19,9 +18,14 @@
     <string name="name">Name</string>
     <string name="phone">Phone</string>
 
+
+    <string name="title_add_contact">Add Contact</string>
+    <string name="title_edit_contact">Edit Contact</string>
+
     <string name="contact_add">Add Contact</string>
     <string name="contact_edit">Edit Contact</string>
 
     <string name="serverLocation">Server Location</string>
     <string name="saved_server_ip">SERVER_IP</string>
+
 </resources>

@@ -2,13 +2,11 @@ package com.community.jboss.leadmanagement.main;
 
 
 import android.Manifest;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -19,13 +17,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
-import com.community.jboss.leadmanagement.AddContactActivity;
 import com.community.jboss.leadmanagement.PermissionManager;
 import com.community.jboss.leadmanagement.R;
 import com.community.jboss.leadmanagement.SettingsActivity;
 import com.community.jboss.leadmanagement.main.contacts.ContactsFragment;
+import com.community.jboss.leadmanagement.main.contacts.editcontact.EditContactActivity;
 import com.community.jboss.leadmanagement.main.groups.GroupsFragment;
 
 import butterknife.BindView;
@@ -54,13 +51,7 @@ public class MainActivity extends AppCompatActivity
 
         mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
 
-        mViewModel.getSelectedNavItem().observe(this,
-                new Observer<MainActivityViewModel.NavigationItem>() {
-                    @Override
-                    public void onChanged(@Nullable MainActivityViewModel.NavigationItem navigationItem) {
-                        displayNavigationItem(navigationItem);
-                    }
-                });
+        mViewModel.getSelectedNavItem().observe(this, this::displayNavigationItem);
 
         PermissionManager permissionManager = new PermissionManager(this, this);
         if (!permissionManager.permissionStatus(Manifest.permission.READ_PHONE_STATE)) {
@@ -171,15 +162,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void initFab() {
-
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
         if (fragment instanceof ContactsFragment) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(getApplicationContext(), AddContactActivity.class));
-                }
-            });
+            fab.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), EditContactActivity.class)));
             fab.setImageResource(R.drawable.ic_add_white_24dp);
         }
     }

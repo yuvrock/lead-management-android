@@ -23,6 +23,10 @@ android {
             }
         }
     }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
@@ -57,9 +61,6 @@ dependencies {
     implementation 'frankiesardo:icepick:3.2.0'
     annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
 
-    //Sugar ORM
-    implementation 'com.github.satyan:sugar:1.5'
-
     //Circular Imageview
     implementation 'com.mikhaellopez:circularimageview:3.0.2'
 
@@ -68,4 +69,6 @@ dependencies {
 
     // Architecture components
     implementation "android.arch.lifecycle:extensions:1.0.0"
+    implementation "android.arch.persistence.room:runtime:1.0.0"
+    annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
 }

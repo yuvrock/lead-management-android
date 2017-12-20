@@ -2,7 +2,7 @@
 <RelativeLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/cellLayout">
+    android:id="@+id/contact_cell_layout">
 
     <com.mikhaellopez.circularimageview.CircularImageView
         android:layout_width="50dp"
@@ -25,8 +25,8 @@
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
         android:textColor="@android:color/black"
-        android:layout_toLeftOf="@+id/deleteContact"
-        android:layout_toStartOf="@+id/deleteContact"
+        android:layout_toLeftOf="@+id/contact_delete"
+        android:layout_toStartOf="@+id/contact_delete"
         android:maxLines="1" />
 
     <TextView
@@ -39,8 +39,8 @@
         android:layout_marginStart="10dp"
         android:layout_below="@id/contact_name"
         android:layout_alignBottom="@id/contact_avatar"
-        android:layout_toLeftOf="@id/deleteContact"
-        android:layout_toStartOf="@id/deleteContact"
+        android:layout_toLeftOf="@id/contact_delete"
+        android:layout_toStartOf="@id/contact_delete"
         android:maxLines="1"/>
 
     <ImageButton
@@ -53,7 +53,7 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="15dp"
         android:layout_marginEnd="15dp"
-        android:id="@id/deleteContact"
+        android:id="@id/contact_delete"
         android:visibility="gone"
         />
 

@@ -7,102 +7,120 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.community.jboss.leadmanagement.AddContactActivity;
-import com.community.jboss.leadmanagement.Classes.Contact;
 import com.community.jboss.leadmanagement.R;
+import com.community.jboss.leadmanagement.data.daos.ContactNumberDao;
+import com.community.jboss.leadmanagement.data.entities.Contact;
+import com.community.jboss.leadmanagement.main.contacts.editcontact.EditContactActivity;
+import com.community.jboss.leadmanagement.utils.DbUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHolder> {
+    private List<Contact> mContacts;
 
-    private List<Contact> contacts;
-    private ContactsAdapter adapter;
+    private AdapterListener mListener;
 
-    ContactsAdapter(List<Contact> myDataset) {
-        contacts = myDataset;
-        adapter = this;
-    }
+    public ContactsAdapter(AdapterListener listener) {
+        mListener = listener;
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        TextView name;
-        TextView number;
-        ImageView avatar;
-        ImageButton deleteButton;
-        RelativeLayout layout;
-        ViewHolder(View v) {
-            super(v);
-            name = v.findViewById(R.id.contact_name);
-            number = v.findViewById(R.id.contact_number);
-            avatar = v.findViewById(R.id.contact_avatar);
-            deleteButton = v.findViewById(R.id.deleteContact);
-            layout = v.findViewById(R.id.cellLayout);
-
-        }
+        mContacts = new ArrayList<>();
     }
 
     @Override
     public ContactsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        View itemView = LayoutInflater.from(parent.getContext())
+        final View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.contact_cell, parent, false);
-
         return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-
-        final Contact contact = contacts.get(position);
-        // TODO add contact avatar
-        holder.name.setText(contact.getName());
-        holder.number.setText(contact.getNumbers().get(0).getNumber());
-        holder.layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Context context = view.getContext();
-                final Intent intent = new Intent(context, AddContactActivity.class);
-                intent.putExtra(AddContactActivity.INTENT_EXTRA_UUID, contact.getUuid().toString());
-                intent.putExtra(AddContactActivity.INTENT_EXTRA_NUMBER, contact.getNumbers().get(0).getNumber());
-                context.startActivity(intent);
-            }
-        });
-        holder.layout.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if(holder.deleteButton.getVisibility()==View.VISIBLE){
-                    holder.deleteButton.setVisibility(View.GONE);
-                }else{
-                    holder.deleteButton.setVisibility(View.VISIBLE);
-                }
-                return true;
-            }
-        });
-        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                // Notify that data was changed
-                contact.delete();
-                contacts.clear();
-                contacts.addAll(Contact.listAll(Contact.class));
-                adapter.notifyDataSetChanged();
-            }
-        });
+        final Contact contact = mContacts.get(position);
+        holder.bind(contact);
     }
 
     @Override
     public int getItemCount() {
-        return contacts.size();
+        return mContacts.size();
     }
 
+    public void replaceData(List<Contact> contacts) {
+        mContacts = contacts;
+        notifyDataSetChanged();
+    }
 
+    public interface AdapterListener {
+        void onContactDeleted(Contact contact);
+    }
 
+    final class ViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener, View.OnLongClickListener {
+        @BindView(R.id.contact_name)
+        TextView name;
+        @BindView(R.id.contact_number)
+        TextView number;
+        @BindView(R.id.contact_delete)
+        ImageButton deleteButton;
 
+        private Contact mContact;
+        private Context mContext;
+
+        ViewHolder(View v) {
+            super(v);
+
+            mContext = v.getContext();
+
+            ButterKnife.bind(this, v);
+
+            v.setOnClickListener(this);
+            v.setOnLongClickListener(this);
+
+            deleteButton.setOnClickListener(view -> mListener.onContactDeleted(mContact));
+        }
+
+        void bind(Contact contact) {
+            mContact = contact;
+
+            // TODO add contact avatar
+            name.setText(contact.getName());
+            number.setText(getNumber());
+        }
+
+        /**
+         * TODO:
+         * This really sucks but it'll do until we decide to make
+         * database transactions go into the background thread,
+         * or find out how to embed the contact number into the
+         * contact object itself
+         */
+        private String getNumber() {
+            final ContactNumberDao dao = DbUtil.contactNumberDao(mContext);
+            return dao.getContactNumbers(mContact.getId()).get(0).getNumber();
+        }
+
+        @Override
+        public void onClick(View view) {
+            final Context context = view.getContext();
+            final Intent intent = new Intent(context, EditContactActivity.class);
+            intent.putExtra(EditContactActivity.INTENT_EXTRA_CONTACT_ID, mContact.getId());
+            context.startActivity(intent);
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            final int newVisibility = deleteButton.getVisibility() == View.VISIBLE
+                    ? View.GONE
+                    : View.VISIBLE;
+            deleteButton.setVisibility(newVisibility);
+            return true;
+        }
+    }
 }
 
