@@ -1,11 +1,13 @@
 package com.community.jboss.leadmanagement.main.contacts;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -69,6 +71,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         @BindView(R.id.contact_delete)
         ImageButton deleteButton;
 
+
         private Contact mContact;
         private Context mContext;
 
@@ -108,9 +111,42 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         @Override
         public void onClick(View view) {
             final Context context = view.getContext();
-            final Intent intent = new Intent(context, EditContactActivity.class);
-            intent.putExtra(EditContactActivity.INTENT_EXTRA_CONTACT_ID, mContact.getId());
-            context.startActivity(intent);
+
+            Dialog detailDialog;
+            detailDialog = new Dialog(context);
+
+            TextView txtClose;
+            Button btnEdit;
+            TextView popupName;
+            TextView contactNum;
+
+            detailDialog.setContentView(R.layout.popup_detail);
+            txtClose = detailDialog.findViewById(R.id.txt_close);
+            btnEdit = detailDialog.findViewById(R.id.btn_edit);
+            popupName = detailDialog.findViewById(R.id.popup_name);
+            contactNum = detailDialog.findViewById(R.id.txt_num);
+
+            popupName.setText(name.getText());
+            contactNum.setText(number.getText());
+
+            txtClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    detailDialog.dismiss();
+                }
+            });
+
+            btnEdit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final Intent intent = new Intent(context, EditContactActivity.class);
+                    intent.putExtra(EditContactActivity.INTENT_EXTRA_CONTACT_ID, mContact.getId());
+                    context.startActivity(intent);
+                }
+            });
+
+            detailDialog.show();
+
         }
 
         @Override

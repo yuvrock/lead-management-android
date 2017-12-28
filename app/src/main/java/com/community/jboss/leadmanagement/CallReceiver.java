@@ -63,7 +63,9 @@ public class CallReceiver extends BroadcastReceiver {
     }
 
     private void showNotification() {
+
         final Intent notificationIntent = new Intent(mContext, EditContactActivity.class);
+
         notificationIntent.putExtra(
                 EditContactActivity.INTENT_EXTRA_CONTACT_ID, mContactNumber.getContactId());
 
@@ -72,7 +74,7 @@ public class CallReceiver extends BroadcastReceiver {
 
         final NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext)
                 .setSmallIcon(R.drawable.ic_call_black_24dp)
-                .setContentTitle("Calling")
+                .setContentTitle("Call in Progress")
                 .setTicker("Lead Management")
                 .setContentIntent(contentIntent)
                 .setContentText("Number: " + mContactNumber.getNumber());
