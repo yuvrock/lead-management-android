@@ -1,4 +1,6 @@
 language: android
+sudo: required
+jdk: oraclejdk8
 
 android:
   components:
@@ -6,12 +8,16 @@ android:
     - platform-tools
     - build-tools-27.0.2
     - android-27
+    - extra-google-google_play_services
+    - extra-google-m2repository
+    - extra-android-m2repository
 
 before_install:
   - yes | sdkmanager "platforms;android-27"
   - chmod +x ./gradlew
 
 script:
+  - echo "Hello! This is Travis"
   - ./gradlew build
 
 before_cache:
