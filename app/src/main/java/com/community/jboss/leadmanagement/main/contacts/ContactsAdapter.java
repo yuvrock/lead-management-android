@@ -1,5 +1,6 @@
 package com.community.jboss.leadmanagement.main.contacts;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.community.jboss.leadmanagement.CustomDialogBox;
 import com.community.jboss.leadmanagement.R;
 import com.community.jboss.leadmanagement.data.daos.ContactNumberDao;
 import com.community.jboss.leadmanagement.data.entities.Contact;
@@ -26,12 +28,12 @@ import butterknife.ButterKnife;
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHolder> {
     private List<Contact> mContacts;
-
-    private AdapterListener mListener;
+    private ContactsAdapter mAdapter;
+    public AdapterListener mListener;
 
     public ContactsAdapter(AdapterListener listener) {
         mListener = listener;
-
+        mAdapter = this;
         mContacts = new ArrayList<>();
     }
 
@@ -85,7 +87,10 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             v.setOnClickListener(this);
             v.setOnLongClickListener(this);
 
-            deleteButton.setOnClickListener(view -> mListener.onContactDeleted(mContact));
+            deleteButton.setOnClickListener(v1 -> {
+                CustomDialogBox dialogBox = new CustomDialogBox();
+                dialogBox.showAlert((Activity) mContext,mContact,mAdapter);
+            });
         }
 
         void bind(Contact contact) {
@@ -129,12 +134,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             popupName.setText(name.getText());
             contactNum.setText(number.getText());
 
-            txtClose.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    detailDialog.dismiss();
-                }
-            });
+            txtClose.setOnClickListener(view1 -> detailDialog.dismiss());
 
             btnEdit.setOnClickListener(new View.OnClickListener() {
                 @Override

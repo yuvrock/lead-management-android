@@ -27,5 +27,8 @@
 
     <string name="serverLocation">Server Location</string>
     <string name="saved_server_ip">SERVER_IP</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="deleteWarning">Are you sure you want to delete this contact?</string>
 
 </resources>
