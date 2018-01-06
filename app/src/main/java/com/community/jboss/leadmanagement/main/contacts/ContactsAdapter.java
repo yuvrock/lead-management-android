@@ -1,9 +1,11 @@
 package com.community.jboss.leadmanagement.main.contacts;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.community.jboss.leadmanagement.CustomDialogBox;
+import com.community.jboss.leadmanagement.PermissionManager;
 import com.community.jboss.leadmanagement.R;
 import com.community.jboss.leadmanagement.data.daos.ContactNumberDao;
 import com.community.jboss.leadmanagement.data.entities.Contact;
@@ -33,6 +36,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
     private ContactsAdapter mAdapter;
     public AdapterListener mListener;
     private List<Contact> spareData;
+    public int sizeOfArray;
 
     public ContactsAdapter(AdapterListener listener) {
         mListener = listener;
@@ -65,6 +69,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    private Context mContext;
     @Override
     public Filter getFilter() {
         mContacts = spareData;
@@ -76,11 +81,19 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
                     mContacts = spareData;
                 }
                 List<Contact> filteredList = new ArrayList<>();
+                final ContactNumberDao dao = DbUtil.contactNumberDao(mContext);
+
                 for(Contact contact: mContacts){
                     if(contact.getName().toLowerCase().contains(data.toLowerCase())){
                         filteredList.add(contact);
                     }
+                    else if (dao.getContactNumbers(contact.getId()).get(0).getNumber().contains(data)) {
+                        filteredList.add(contact);
+                    }
                 }
+                
+                sizeOfArray = filteredList.size();
+
                 FilterResults results = new FilterResults();
                 results.values = filteredList;
                 return results;
@@ -110,12 +123,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
         private Contact mContact;
         private Context mContext;
+        private PermissionManager permManager;
 
         ViewHolder(View v) {
             super(v);
 
             mContext = v.getContext();
-
+            permManager = new PermissionManager(mContext,(Activity) mContext);
             ButterKnife.bind(this, v);
 
             v.setOnClickListener(this);
@@ -156,15 +170,19 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             detailDialog = new Dialog(context);
 
             TextView txtClose;
-            Button btnEdit;
             TextView popupName;
             TextView contactNum;
+            Button btnEdit;
+            Button btnCall;
+            Button btnMsg;
 
             detailDialog.setContentView(R.layout.popup_detail);
             txtClose = detailDialog.findViewById(R.id.txt_close);
             btnEdit = detailDialog.findViewById(R.id.btn_edit);
             popupName = detailDialog.findViewById(R.id.popup_name);
             contactNum = detailDialog.findViewById(R.id.txt_num);
+            btnCall = detailDialog.findViewById(R.id.btn_call);
+            btnMsg = detailDialog.findViewById(R.id.btn_msg);
 
             popupName.setText(name.getText());
             contactNum.setText(number.getText());
@@ -175,12 +193,36 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
                 @Override
                 public void onClick(View view) {
                     final Intent intent = new Intent(context, EditContactActivity.class);
-                    intent.putExtra(EditContactActivity.INTENT_EXTRA_CONTACT_ID, mContact.getId());
+                    intent.putExtra(EditContactActivity.INTENT_EXTRA_CONTACT_NUM, number.getText().toString());
                     context.startActivity(intent);
                 }
             });
 
+
+            btnCall.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(permManager.permissionStatus(Manifest.permission.CALL_PHONE)) {
+                        Intent intent = new Intent(Intent.ACTION_CALL);
+                        intent.setData(Uri.parse("tel:" + number.getText().toString()));
+                        context.startActivity(intent);
+                    }else{
+                        permManager.requestPermission(58,Manifest.permission.CALL_PHONE);
+                    }
+                }
+            });
+
+            btnMsg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:"
+                            + number.getText().toString())));
+                }
+            });
+
             detailDialog.show();
+
+
 
         }
 

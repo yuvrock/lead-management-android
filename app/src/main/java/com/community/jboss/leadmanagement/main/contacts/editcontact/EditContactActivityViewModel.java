@@ -59,6 +59,11 @@ public class EditContactActivityViewModel extends AndroidViewModel {
         return mContactNumbers;
     }
 
+    public ContactNumber getContactNumberByNumber(String number){
+        final ContactNumberDao contactNumberDao = DbUtil.contactNumberDao(getApplication());
+        return contactNumberDao.getContactNumber(number);
+    }
+
     public void saveContact(String name) {
         final ContactDao dao = DbUtil.contactDao(getApplication());
 

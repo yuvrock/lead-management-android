@@ -8,6 +8,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/text_no_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="100dp"
+            android:text="@string/no_results"
+            android:textStyle="bold"
+            android:layout_gravity="center"/>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/contact_recycler"
             android:layout_width="match_parent"
