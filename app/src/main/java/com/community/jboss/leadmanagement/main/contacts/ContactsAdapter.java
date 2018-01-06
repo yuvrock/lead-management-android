@@ -34,6 +34,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
     private ContactsAdapter mAdapter;
     public AdapterListener mListener;
     private List<Contact> spareData;
+    public int sizeOfArray;
 
     public ContactsAdapter(AdapterListener listener) {
         mListener = listener;
@@ -66,6 +67,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    private Context mContext;
     @Override
     public Filter getFilter() {
         mContacts = spareData;
@@ -77,11 +79,19 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
                     mContacts = spareData;
                 }
                 List<Contact> filteredList = new ArrayList<>();
+                final ContactNumberDao dao = DbUtil.contactNumberDao(mContext);
+
                 for(Contact contact: mContacts){
                     if(contact.getName().toLowerCase().contains(data.toLowerCase())){
                         filteredList.add(contact);
                     }
+                    else if (dao.getContactNumbers(contact.getId()).get(0).getNumber().contains(data)) {
+                        filteredList.add(contact);
+                    }
                 }
+                
+                sizeOfArray = filteredList.size();
+
                 FilterResults results = new FilterResults();
                 results.values = filteredList;
                 return results;

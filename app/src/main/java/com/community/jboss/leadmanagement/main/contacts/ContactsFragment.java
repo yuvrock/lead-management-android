@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.community.jboss.leadmanagement.R;
 import com.community.jboss.leadmanagement.data.entities.Contact;
@@ -28,6 +29,8 @@ public class ContactsFragment extends MainFragment implements ContactsAdapter.Ad
     RecyclerView recyclerView;
     @BindView(R.id.swipeRefresh)
     SwipeRefreshLayout swipeToRefresh;
+    @BindView(R.id.text_no_result)
+    TextView textView;
 
     private Unbinder mUnbinder;
     private ContactsFragmentViewModel mViewModel;
@@ -52,6 +55,8 @@ public class ContactsFragment extends MainFragment implements ContactsAdapter.Ad
 
         mAdapter = new ContactsAdapter(this);
         recyclerView.setAdapter(mAdapter);
+
+        textView.setVisibility(View.GONE);
 
         swipeToRefresh.setOnRefreshListener(() -> {
             mAdapter.replaceData(mViewModel.getContacts().getValue());
@@ -101,13 +106,18 @@ public class ContactsFragment extends MainFragment implements ContactsAdapter.Ad
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        mAdapter.getFilter().filter(query);
         return true;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
         mAdapter.getFilter().filter(newText);
+        if (mAdapter.sizeOfArray == 0){
+            textView.setVisibility(View.VISIBLE);
+        }
+        else {
+            textView.setVisibility(View.GONE);
+        }
         return true;
     }
 }
