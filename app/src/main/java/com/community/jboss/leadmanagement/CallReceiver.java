@@ -10,15 +10,12 @@ import android.support.v4.app.NotificationCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
-import com.community.jboss.leadmanagement.data.daos.ContactNumberDao;
-import com.community.jboss.leadmanagement.data.entities.ContactNumber;
 import com.community.jboss.leadmanagement.main.contacts.editcontact.EditContactActivity;
-import com.community.jboss.leadmanagement.utils.DbUtil;
 
 public class CallReceiver extends BroadcastReceiver {
     private static final int ID = 47981;
 
-    private ContactNumber mContactNumber;
+    private String number;
     private Context mContext;
 
     @Override
@@ -33,12 +30,11 @@ public class CallReceiver extends BroadcastReceiver {
         final String state = extras.getString(TelephonyManager.EXTRA_STATE);
         if (state == null) return;
 
-        final String number = extras.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-        if (number == null) return;
+        final String callerNum = extras.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+        if (callerNum == null) return;
 
         mContext = context;
-        final ContactNumberDao dao = DbUtil.contactNumberDao(mContext);
-        mContactNumber = dao.getContactNumber(number);
+        this.number = callerNum;
 
         if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
             showNotification();
@@ -62,7 +58,7 @@ public class CallReceiver extends BroadcastReceiver {
         final Intent notificationIntent = new Intent(mContext, EditContactActivity.class);
 
         notificationIntent.putExtra(
-                EditContactActivity.INTENT_EXTRA_CONTACT_ID, mContactNumber.getContactId());
+                EditContactActivity.INTENT_EXTRA_CONTACT_NUM, number);
 
         final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -72,7 +68,7 @@ public class CallReceiver extends BroadcastReceiver {
                 .setContentTitle("Call in Progress")
                 .setTicker("Lead Management")
                 .setContentIntent(contentIntent)
-                .setContentText("Number: " + mContactNumber.getNumber());
+                .setContentText("Number: " + number);
 
         final NotificationManager manager =
                 (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);

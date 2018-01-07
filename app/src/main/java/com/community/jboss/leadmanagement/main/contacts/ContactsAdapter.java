@@ -1,5 +1,6 @@
 package com.community.jboss.leadmanagement.main.contacts;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.community.jboss.leadmanagement.CustomDialogBox;
+import com.community.jboss.leadmanagement.PermissionManager;
 import com.community.jboss.leadmanagement.R;
 import com.community.jboss.leadmanagement.data.daos.ContactNumberDao;
 import com.community.jboss.leadmanagement.data.entities.Contact;
@@ -121,12 +123,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
         private Contact mContact;
         private Context mContext;
+        private PermissionManager permManager;
 
         ViewHolder(View v) {
             super(v);
 
             mContext = v.getContext();
-
+            permManager = new PermissionManager(mContext,(Activity) mContext);
             ButterKnife.bind(this, v);
 
             v.setOnClickListener(this);
@@ -190,7 +193,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
                 @Override
                 public void onClick(View view) {
                     final Intent intent = new Intent(context, EditContactActivity.class);
-                    intent.putExtra(EditContactActivity.INTENT_EXTRA_CONTACT_ID, mContact.getId());
+                    intent.putExtra(EditContactActivity.INTENT_EXTRA_CONTACT_NUM, number.getText().toString());
                     context.startActivity(intent);
                 }
             });
@@ -199,9 +202,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             btnCall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" + number.getText().toString()));
+                    if(permManager.permissionStatus(Manifest.permission.CALL_PHONE)) {
+                        Intent intent = new Intent(Intent.ACTION_CALL);
+                        intent.setData(Uri.parse("tel:" + number.getText().toString()));
                         context.startActivity(intent);
+                    }else{
+                        permManager.requestPermission(58,Manifest.permission.CALL_PHONE);
+                    }
                 }
             });
 

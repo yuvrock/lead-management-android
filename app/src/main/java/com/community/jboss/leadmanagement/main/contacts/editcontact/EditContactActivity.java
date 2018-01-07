@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 
 
 public class EditContactActivity extends AppCompatActivity {
-    public static final String INTENT_EXTRA_CONTACT_ID = "INTENT_EXTRA_CONTACT_ID";
+    public static final String INTENT_EXTRA_CONTACT_NUM = "INTENT_EXTRA_CONTACT_NUM";
 
     @BindView(R.id.add_contact_toolbar)
     Toolbar toolbar;
@@ -83,8 +83,13 @@ public class EditContactActivity extends AppCompatActivity {
         });
 
         final Intent intent = getIntent();
-        final String contactId = intent.getStringExtra(INTENT_EXTRA_CONTACT_ID);
-        mViewModel.setContact(contactId);
+        final String number = intent.getStringExtra(INTENT_EXTRA_CONTACT_NUM);
+        if(mViewModel.getContactNumberByNumber(number)!=null){
+            mViewModel.setContact(mViewModel.getContactNumberByNumber(number).getId());
+        }else{
+            mViewModel.setContact(null);
+            contactNumberField.setText(number);
+        }
 
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_close_black_24dp));
         setSupportActionBar(toolbar);
