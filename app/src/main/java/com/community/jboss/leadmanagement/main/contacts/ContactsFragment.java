@@ -1,21 +1,16 @@
 package com.community.jboss.leadmanagement.main.contacts;
 
-import android.arch.lifecycle.ViewModelProviders;
+import android.arch.persistence.room.Room;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
-import android.widget.TextView;
 
+import com.community.jboss.leadmanagement.LeadDB;
 import com.community.jboss.leadmanagement.R;
-import com.community.jboss.leadmanagement.data.entities.Contact;
 import com.community.jboss.leadmanagement.main.MainActivity;
 import com.community.jboss.leadmanagement.main.MainFragment;
 
@@ -23,61 +18,34 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class ContactsFragment extends MainFragment implements ContactsAdapter.AdapterListener, SearchView.OnQueryTextListener {
+public class ContactsFragment extends MainFragment {
 
     @BindView(R.id.contact_recycler)
     RecyclerView recyclerView;
     @BindView(R.id.swipeRefresh)
     SwipeRefreshLayout swipeToRefresh;
-    @BindView(R.id.text_no_result)
-    TextView textView;
 
     private Unbinder mUnbinder;
-    private ContactsFragmentViewModel mViewModel;
-    private ContactsAdapter mAdapter;
+
+    LeadDB leadDB = Room.databaseBuilder(getContext(),
+            LeadDB.class, "database-name").build();
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initView();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_contacts, container, false);
-        setHasOptionsMenu(true);
+
+        View view = inflater.inflate(R.layout.fragment_contacts, container, false);
         mUnbinder = ButterKnife.bind(this, view);
+        initView();
+        ((MainActivity) getContext()).initFab();
 
-        mViewModel = ViewModelProviders.of(this).get(ContactsFragmentViewModel.class);
-        mViewModel.getContacts().observe(this, contacts -> {
-            mAdapter.replaceData(contacts);
-        });
-
-        final MainActivity activity = (MainActivity) getActivity();
-        if (activity != null) {
-            activity.initFab();
-        }
-
-        mAdapter = new ContactsAdapter(this);
-        recyclerView.setAdapter(mAdapter);
-
-        textView.setVisibility(View.GONE);
-
-        swipeToRefresh.setOnRefreshListener(() -> {
-            mAdapter.replaceData(mViewModel.getContacts().getValue());
-            swipeToRefresh.setRefreshing(false);
-        });
         return view;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        MenuItem searchMenuItem = menu.findItem(R.id.action_search);
-        MenuItem importItem = menu.findItem(R.id.action_import);
-        importItem.setVisible(true);
-        SearchView searchView = (SearchView) searchMenuItem.getActionView();
-        searchView.setQueryHint(getString(R.string.search));
-        searchView.onActionViewExpanded();
-        searchView.clearFocus();
-        searchView.setSubmitButtonEnabled(false);
-        searchView.setQueryRefinementEnabled(false);
-        searchView.setOnQueryTextListener(this);
     }
 
     @Override
@@ -87,37 +55,26 @@ public class ContactsFragment extends MainFragment implements ContactsAdapter.Ad
         mUnbinder.unbind();
     }
 
+    private void initView() {
+        final ContactsAdapter adapter = new ContactsAdapter(getContext(), leadDB.getContactDao().getContacts());
+        if (leadDB.getContactDao().getContacts().size() > 0) {
+            recyclerView.setAdapter(adapter);
+
+            swipeToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    initView();
+
+                    swipeToRefresh.setRefreshing(false);
+                }
+            });
+        }
+
+        //No Contact
+    }
+
     @Override
     public int getTitle() {
         return R.string.title_contacts;
-    }
-
-    @Override
-    public void onContactDeleted(Contact contact) {
-        mViewModel.deleteContact(contact);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        MenuItem item = menu.findItem(R.id.action_search);
-        item.setVisible(true);
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        mAdapter.getFilter().filter(newText);
-        if (mAdapter.sizeOfArray == 0){
-            textView.setVisibility(View.VISIBLE);
-        }
-        else {
-            textView.setVisibility(View.GONE);
-        }
-        return true;
     }
 }
