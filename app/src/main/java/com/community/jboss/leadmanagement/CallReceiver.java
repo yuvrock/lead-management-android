@@ -1,10 +1,12 @@
 package com.community.jboss.leadmanagement;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.telephony.TelephonyManager;
@@ -56,6 +58,7 @@ public class CallReceiver extends BroadcastReceiver {
     private void showNotification() {
 
         final Intent notificationIntent = new Intent(mContext, EditContactActivity.class);
+        String CHANNEL_ID = "lead-management-ch";
 
         notificationIntent.putExtra(
                 EditContactActivity.INTENT_EXTRA_CONTACT_NUM, number);
@@ -68,12 +71,20 @@ public class CallReceiver extends BroadcastReceiver {
                 .setContentTitle("Call in Progress")
                 .setTicker("Lead Management")
                 .setContentIntent(contentIntent)
-                .setContentText("Number: " + number);
+                .setContentText("Number: " + number)
+                .setChannelId(CHANNEL_ID);
 
         final NotificationManager manager =
                 (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         if (manager != null) {
             manager.cancel(ID);
+            // check build version
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                CharSequence name = "Lead-Management-Channel";
+                int importance = NotificationManager.IMPORTANCE_HIGH;
+                NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+                manager.createNotificationChannel(mChannel);
+            }
             manager.notify(ID, notification.build());
         }
     }

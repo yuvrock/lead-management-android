@@ -85,7 +85,7 @@ public class EditContactActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         final String number = intent.getStringExtra(INTENT_EXTRA_CONTACT_NUM);
         if(mViewModel.getContactNumberByNumber(number)!=null){
-            mViewModel.setContact(mViewModel.getContactNumberByNumber(number).getId());
+            mViewModel.setContact(mViewModel.getContactNumberByNumber(number).getContactId());
         }else{
             mViewModel.setContact(null);
             contactNumberField.setText(number);
