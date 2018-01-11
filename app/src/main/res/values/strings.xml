@@ -34,6 +34,8 @@
     <string name="import_contacts">Import contacts</string>
     
     <string name="no_results">No results found</string>
+    <string name="email">Email</string>
+    <string name="mobile">Mobile</string>
 
 
 </resources>
