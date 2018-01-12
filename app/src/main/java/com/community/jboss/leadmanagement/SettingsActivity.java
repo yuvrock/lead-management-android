@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.community.jboss.leadmanagement.main.MainActivity;
+import com.community.jboss.leadmanagement.main.contacts.editcontact.EditContactActivity;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -53,6 +56,17 @@ public class SettingsActivity extends FragmentActivity {
             @Override
             public void onCheckedChanged(CompoundButton view, boolean isChecked) {
                 toggleTheme(isChecked);
+                if (isChecked){
+                    MainActivity.useDarkTheme = true;
+                    EditContactActivity.useDarkTheme = true;
+                    Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+                else {
+                    MainActivity.useDarkTheme = false;
+                    Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
             }
         });
     }

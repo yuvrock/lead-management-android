@@ -23,7 +23,7 @@
             android:title="@string/action_settings"/>
         <item
             android:id="@+id/toggle_theme"
-            android:icon="@drawable/ic_cloud_black_24dp"
+            android:icon="@drawable/ic_night"
             android:title="@string/toggle"/>
 
         <item
