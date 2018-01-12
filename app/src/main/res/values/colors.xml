@@ -4,4 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorPopup">#F2F2F2</color>
+    <color name="darkColorPrimary">#03A9F4</color>
+    <color name="darkColorPrimaryDark">#09B9F9</color>
+    <color name="darkColorAccent">#03A9F4</color>
+    <color name="darkColorName">#FFFFFF</color>
 </resources>
