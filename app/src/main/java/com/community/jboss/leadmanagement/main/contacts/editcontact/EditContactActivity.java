@@ -137,14 +137,5 @@ public class EditContactActivity extends AppCompatActivity {
         return true;
     }
 
-    private void toggleTheme(boolean darkTheme) {
-        SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
-        editor.putBoolean(PREF_DARK_THEME, darkTheme);
-        editor.apply();
 
-        //Intent intent = getIntent();
-        //finish();
-
-        //startActivity(intent);
-    }
 }
