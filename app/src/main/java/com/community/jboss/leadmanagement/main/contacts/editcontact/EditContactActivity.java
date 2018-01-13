@@ -2,11 +2,11 @@ package com.community.jboss.leadmanagement.main.contacts.editcontact;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -22,43 +22,27 @@ public class EditContactActivity extends AppCompatActivity {
     public static final String INTENT_EXTRA_CONTACT_NUM = "INTENT_EXTRA_CONTACT_NUM";
 
     @BindView(R.id.add_contact_toolbar)
-    Toolbar toolbar;
+    android.support.v7.widget.Toolbar toolbar;
     @BindView(R.id.contact_name_field)
     EditText contactNameField;
     @BindView(R.id.contact_number_field)
     EditText contactNumberField;
 
     private EditContactActivityViewModel mViewModel;
+    public static boolean useDarkTheme;
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        final int id = item.getItemId();
-        switch (id) {
-            case R.id.action_save:
-                saveContact();
-                break;
-            default:
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.create_contact, menu);
-        return true;
-    }
+    private static final String PREFS_NAME = "prefs";
+    private static final String PREF_DARK_THEME = "dark_theme";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        boolean useDarkTheme = preferences.getBoolean(PREF_DARK_THEME, false);
+
+        if(useDarkTheme) {
+            setTheme(R.style.AppTheme_BG);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_contact);
 
@@ -99,6 +83,35 @@ public class EditContactActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        final int id = item.getItemId();
+        switch (id) {
+            case R.id.action_save:
+                saveContact();
+                break;
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.create_contact, menu);
+        return true;
+    }
+
+
+
     //TODO Add multiple numbers
     private void saveContact() {
         // Check is Name or Password is empty
@@ -122,5 +135,16 @@ public class EditContactActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    private void toggleTheme(boolean darkTheme) {
+        SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
+        editor.putBoolean(PREF_DARK_THEME, darkTheme);
+        editor.apply();
+
+        //Intent intent = getIntent();
+        //finish();
+
+        //startActivity(intent);
     }
 }
