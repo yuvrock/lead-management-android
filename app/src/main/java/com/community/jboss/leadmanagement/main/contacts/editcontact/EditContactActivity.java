@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import com.community.jboss.leadmanagement.data.entities.ContactNumber;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.community.jboss.leadmanagement.SettingsActivity.PREF_DARK_THEME;
 
 public class EditContactActivity extends AppCompatActivity {
     public static final String INTENT_EXTRA_CONTACT_NUM = "INTENT_EXTRA_CONTACT_NUM";
@@ -29,14 +31,11 @@ public class EditContactActivity extends AppCompatActivity {
     EditText contactNumberField;
 
     private EditContactActivityViewModel mViewModel;
-    public static boolean useDarkTheme;
 
-    private static final String PREFS_NAME = "prefs";
-    private static final String PREF_DARK_THEME = "dark_theme";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean useDarkTheme = preferences.getBoolean(PREF_DARK_THEME, false);
 
         if(useDarkTheme) {

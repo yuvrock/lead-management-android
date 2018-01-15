@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -30,6 +31,7 @@ import com.community.jboss.leadmanagement.main.groups.GroupsFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
+import static com.community.jboss.leadmanagement.SettingsActivity.PREF_DARK_THEME;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -47,13 +49,11 @@ public class MainActivity extends AppCompatActivity
     private MainActivityViewModel mViewModel;
     private PermissionManager permissionManager;
 
-    private static final String PREFS_NAME = "prefs";
-    private static final String PREF_DARK_THEME = "dark_theme";
     public static boolean useDarkTheme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         useDarkTheme = preferences.getBoolean(PREF_DARK_THEME, false);
 
         if(useDarkTheme) {
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void darkTheme(boolean darkTheme) {
-        SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putBoolean(PREF_DARK_THEME, darkTheme);
         editor.apply();
 
