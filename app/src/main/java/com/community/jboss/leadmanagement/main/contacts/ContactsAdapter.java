@@ -43,7 +43,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
     private ContactsAdapter mAdapter;
     public AdapterListener mListener;
     private List<Contact> spareData;
-    public int sizeOfArray;
 
     public ContactsAdapter(AdapterListener listener) {
         mListener = listener;
@@ -98,8 +97,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
                         filteredList.add(contact);
                     }
                 }
-                
-                sizeOfArray = filteredList.size();
 
                 FilterResults results = new FilterResults();
                 results.values = filteredList;
@@ -259,6 +256,10 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             }
             return true;
         }
+    }
+
+    public int getDataSize(){
+        return mContacts.size();
     }
 }
 

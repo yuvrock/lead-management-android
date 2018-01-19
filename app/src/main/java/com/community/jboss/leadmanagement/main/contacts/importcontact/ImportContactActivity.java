@@ -109,8 +109,10 @@ public class ImportContactActivity extends AppCompatActivity {
                         .replace(")","")
                         .replace(" ","")
                         .replace("-","");
-                ImportContact contact = new ImportContact(name,number);
-                contacts.add(contact);
+                if(numberDao.getContactNumber(number)==null) {
+                    ImportContact contact = new ImportContact(name, number);
+                    contacts.add(contact);
+                }
             } while (people.moveToNext());
         }
         people.close();
