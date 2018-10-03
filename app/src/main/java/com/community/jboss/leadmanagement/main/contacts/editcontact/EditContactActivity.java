@@ -114,10 +114,11 @@ public class EditContactActivity extends AppCompatActivity {
     //TODO Add multiple numbers
     private void saveContact() {
         // Check is Name or Password is empty
-        if (!checkEditText(contactNameField, "Please enter name")
+        if (!checkEditText(contactNameField, "Please enter name")||!checkNo(contactNumberField,"Enter Correct no.")
                 || !checkEditText(contactNumberField, "Please enter number")) {
             return;
         }
+
 
         final String name = contactNameField.getText().toString();
         mViewModel.saveContact(name);
@@ -133,8 +134,14 @@ public class EditContactActivity extends AppCompatActivity {
             editText.setError(errorStr);
             return false;
         }
+
         return true;
     }
-
-
+    private boolean checkNo(EditText editText, String errorStr) {
+        if (editText.getText().toString().length() < 4) {
+            editText.setError(errorStr);
+            return false;
+        }
+        return true;
+    }
 }

@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.supportLibVersion
 
     lintOptions {
         abortOnError false
@@ -31,6 +30,7 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+    buildToolsVersion '27.0.3'
 }
 
 dependencies {
@@ -39,7 +39,7 @@ dependencies {
     // Support library
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation 'com.android.support:preference-v7:27.0.2'
-    compile 'com.android.support:preference-v14:27.0.2'
+    implementation 'com.android.support:preference-v14:27.0.2'
 
     // Constraint layout
     implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta3'
