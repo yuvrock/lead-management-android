@@ -48,6 +48,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -101,14 +103,24 @@ public class MainActivity extends BaseActivity
         header.findViewById(R.id.sign_in_button).setOnClickListener(this);
         header.findViewById(R.id.sign_out_button).setOnClickListener(this);
 
-        FirebaseApp.initializeApp(this, new FirebaseOptions.Builder()
-                .setApiKey("YOUR_API_KEY")
-                .setApplicationId("YOUR_APPLICATION_ID")
-                .setDatabaseUrl("YOUR_DB_URL")
-                .setGcmSenderId("YOUR_SENDER_ID")
-                .setStorageBucket("YOUR_STORAGE_BUCKET").build());
+        boolean isFirebaseAlreadyIntialized=false;
+        List<FirebaseApp> firebaseApps = FirebaseApp.getApps(this);
+        for(FirebaseApp app : firebaseApps){
+            if(app.getName().equals(FirebaseApp.DEFAULT_APP_NAME)){
+                isFirebaseAlreadyIntialized=true;
+            }
+        }
 
+        if(!isFirebaseAlreadyIntialized) {
+            FirebaseApp.initializeApp(this, new FirebaseOptions.Builder()
+                    .setApiKey("YOUR_API_KEY")
+                    .setApplicationId("YOUR_APPLICATION_ID")
+                    .setDatabaseUrl("YOUR_DB_URL")
+                    .setGcmSenderId("YOUR_SENDER_ID")
+                    .setStorageBucket("YOUR_STORAGE_BUCKET").build());
+        }
 
+        
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("YOUR_REQUEST_ID_TOKEN")
                 .requestEmail()
