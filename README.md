@@ -1,4 +1,4 @@
-# lead-management-android
+# Lead-management-android
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/465ebd9884094ae3837142f13857b53a)](https://www.codacy.com/app/UniverseObserver/lead-management-android?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=UniverseObserver/lead-management-android&amp;utm_campaign=Badge_Grade)
 [![Build Status](https://travis-ci.org/JbossOutreach/lead-management-android.svg?branch=master)](https://travis-ci.org/JbossOutreach/lead-management-android)
 
@@ -12,7 +12,7 @@ This app is currently in development, which means that in the future, many more 
 ### Work Flow
 * A Splash Screen that displays the app icon every time that app is launched.
 * A Quick Walk-thorugh (Slider) of the Visiting Card Android App when the App is launched for the first time.
-* A Login Activity to ensure only Authentic Users use the app - Implemented using Firebase Authentication.
+* A Login Activity to ensure only Authentic Users use the app - implemented using Firebase Authentication.
 * A Base Activity with a bottom navigation bar that allows the user to navigate through the list of contacts and groups.
 * Contacts Fragment that shows the saved contacts in a Recycler View with a FAB to add a new contact
 * Clicking on the Recycler View item opens a Dialog that shows the information for that contact and allowing us to edit/call them.
